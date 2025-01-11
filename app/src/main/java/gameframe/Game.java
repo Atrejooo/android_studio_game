@@ -44,7 +44,7 @@ public class Game implements DoneUpdateable {
         connectionSource.ip = deviceIp;
         conductor.setConnectionSource(connectionSource);
 
-        conductor.setFps(40);
+        conductor.setFps(100);
 
         // init loop
         conductor.start();

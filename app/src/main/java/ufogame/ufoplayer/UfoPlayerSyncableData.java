@@ -6,9 +6,6 @@ import gameframe.utils.Vec2;
 import synchronizer.SyncableData;
 
 public class UfoPlayerSyncableData implements SyncableData, Serializable {
-    int index;
-
-
     Vec2 pos;
     Vec2 vel;
 
@@ -41,10 +38,5 @@ public class UfoPlayerSyncableData implements SyncableData, Serializable {
     @Override
     public boolean containsNull() {
         return pos == null || inputDir == null || vel == null;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " index: " + index;
     }
 }

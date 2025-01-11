@@ -13,6 +13,7 @@ public class BallSyncableData implements SyncableData {
 
     int targetInstanceId;
 
+    private int updateIndex;
     private int instanceId;
 
     @Override

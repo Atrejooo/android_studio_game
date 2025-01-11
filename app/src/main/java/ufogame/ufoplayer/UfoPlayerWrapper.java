@@ -25,8 +25,6 @@ import synchronizer.SyncableData;
 
 public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEventExecutor, HitBoxObserver {
     private static final String debugName = "UfoPlayerWrapper";
-    private int dataIndex;
-
 
     private int playerId;
     private Vec2 currentInputDir = new Vec2();
@@ -105,9 +103,6 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
 
         data.playerId = playerId;
 
-        //debugging
-        data.index = dataIndex++;
-
         return data;
     }
 
@@ -115,25 +110,22 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
     public void processData(SyncableData data) {
         UfoPlayerSyncableData ufoData = (UfoPlayerSyncableData) data;
         this.playerId = ufoData.playerId;
-        dataIndex++;
 
         //velo
         float diff = velocityMovement.velo().sub(ufoData.vel).mag();
         if (diff > 0.05) {
-            Log.e(debugName, "big velo diff: " + diff);
+            //Log.e(debugName, "big velo diff: " + diff);
         }
         velocityMovement.setVelo(ufoData.vel);
 
         //pos
         diff = mainPlayerNode.transform().pos().sub(ufoData.pos).mag();
         if (diff > 0.2) {
-            Log.e(debugName, "big pos diff: " + diff);
+            //Log.e(debugName, "big pos diff: " + diff);
         }
         mainPlayerNode.transform().setPos(ufoData.pos);
 
         currentInputDir = ufoData.inputDir;
-
-        Log.d(debugName, "received package idx: " + ufoData.index + ", myIdx: " + dataIndex);
     }
 
     boolean performSync = true;
@@ -176,9 +168,9 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
             Log.e(debugName, "currentInputDir is null!");
             return;
         }
+
         //TODO check if active works
         //does not seem to happen on clientPlayer
-
 
         //nvm. does get called!
         //but why tf does it not move?
@@ -208,7 +200,7 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
         if (conductor == null)
             return;
 
-        if (playerId != conductor.getMyPlayerId()) {
+        if (playerId == conductor.getMyPlayerId()) {
             conductor.camera().followObj = mainPlayerNode;
         }
     }

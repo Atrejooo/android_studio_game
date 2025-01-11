@@ -72,7 +72,7 @@ public abstract class SyncableNodeWrapper extends NodeWrapper implements Syncabl
     }
 
     private SyncableData currentData;
-    private SyncableData currentData2;
+
     @Override
     public final void giveData(SyncableData data) {
         if (data.containsNull()) {

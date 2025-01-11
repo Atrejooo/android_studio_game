@@ -64,6 +64,8 @@ public class BallWrapper extends SyncableNodeWrapper implements CollisionObserve
         rendererData.setColor(new Color(1));
         rendererData.layer = 0;
 
+        syncDelay = 0.5f;
+
         animator = mainNode.add(Animator.class);
         animator.setAnimation(new ImgAnimation(0.075f, "ball", 0, 0));
     }
@@ -158,7 +160,6 @@ public class BallWrapper extends SyncableNodeWrapper implements CollisionObserve
         if (!dir.equals(lastAccelDir)) {
             accelDir = dir;
             lastAccelDir = dir;
-            performSync = true;
         }
 
         velocityMovement.addForce(accelDir.mult(speedF * conductor.delta()));

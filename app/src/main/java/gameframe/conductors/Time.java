@@ -22,8 +22,8 @@ public class Time implements Loopable {
      * @return The delta time in seconds.
      */
     public float delta() {
-        //return deltaTime;
-        return 0.025f;
+        return deltaTime;
+        //return 0.025f;
     }
 
     /**

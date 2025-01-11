@@ -26,10 +26,10 @@
       </SelectionState>
       <SelectionState runConfigName="ufo">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-01-11T20:05:07.061639200Z">
+        <DropdownSelection timestamp="2025-01-11T22:52:35.683120500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\arthu\.android\avd\Medium_Phone_API_35.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\arthu\.android\avd\Copy_of_Medium_Phone_API_35.avd" />
             </handle>
           </Target>
         </DropdownSelection>
