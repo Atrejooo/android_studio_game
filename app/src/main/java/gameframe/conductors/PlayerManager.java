@@ -51,6 +51,14 @@ public class PlayerManager extends Conductible {
         playerInstances.put(playerId, playerInstance);
     }
 
+    public void removePlayerInstance(int playerId){
+        playerInstances.remove(playerId);
+    }
+
+    public Color getPlayerColor(int id){
+        return playerColors.get(id);
+    }
+
     public SyncableNodeWrapper getPlayerInstance(int playerId) {
         return playerInstances.get(playerId);
     }
@@ -79,12 +87,12 @@ public class PlayerManager extends Conductible {
             keysArray[index++] = key;
         }
 
-        return playerIds();
+        return keysArray;
     }
 
     public void reAddPlayers() {
         Map<Integer, SyncableNodeWrapper> map = new HashMap<>();
-        for (Integer id : playerInstances.keySet()) {
+        for (Integer id : players.keySet()) {
             map.put(id, playerFactory.createPlayerInstance(conductor, id));
         }
 

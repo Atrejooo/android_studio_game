@@ -17,7 +17,8 @@ public class Conductible implements YellListener {
     }
 
     public void removeConductor() {
-        conductor.removeYellListender(this);
+        if (conductor != null)
+            conductor.removeYellListender(this);
         conductor = null;
     }
 

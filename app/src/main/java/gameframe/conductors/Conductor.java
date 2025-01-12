@@ -176,7 +176,8 @@ public class Conductor extends Time implements SyncContext, DoneUpdateable {
     public RendererData[] getRendererDatas() {
         ArrayList<Renderer> activeRenderers = new ArrayList<Renderer>();
 
-        for (Renderer renderer : renderers) {
+        for (int i = 0; i < renderers.size(); i++) {
+            Renderer renderer = renderers.get(i);
             if (renderer.active()) {
                 activeRenderers.add(renderer);
             }
@@ -425,6 +426,8 @@ public class Conductor extends Time implements SyncContext, DoneUpdateable {
     public void doneUpdating() {
         if (startedSyncing && connector.getChannel().isOpen()) {
             synchronizer.sync();
+        } else if (startedSyncing && !connector.getChannel().isOpen()) {
+            switchScene(0);
         }
 
         performSceneSwitch();

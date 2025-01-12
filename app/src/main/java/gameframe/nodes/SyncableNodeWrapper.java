@@ -2,6 +2,8 @@ package gameframe.nodes;
 
 import android.util.Log;
 
+import java.util.LinkedList;
+
 import gameframe.conductors.Conductor;
 import gameframe.functionalities.syncing.DisposeSyncedEvent;
 import gameframe.functionalities.syncing.DisposeSyncedEventData;
@@ -95,16 +97,26 @@ public abstract class SyncableNodeWrapper extends NodeWrapper implements Syncabl
         return false;
     }
 
+    private LinkedList<SyncedEventData> eventCache = new LinkedList<>();
+
     @Override
     public final void replicateEvent(SyncedEventData data) {
-        if (data instanceof DisposeSyncedEventData) {
-            Idable instance = conductor.getIdDealer().fromInstanceId(data.objectIds()[0]);
+        eventCache.add(data);
+    }
 
-            if (instance instanceof Disposable) {
-                ((Disposable) instance).dispose();
+    private void clearEventCache() {
+        while (eventCache.size() > 0) {
+            SyncedEventData data = eventCache.removeFirst();
+
+            if (data instanceof DisposeSyncedEventData) {
+                Idable instance = conductor.getIdDealer().fromInstanceId(data.objectIds()[0]);
+
+                if (instance instanceof Disposable) {
+                    ((Disposable) instance).dispose();
+                }
+            } else {
+                replicateOwnEvent(data);
             }
-        } else {
-            replicateOwnEvent(data);
         }
     }
 
@@ -132,9 +144,20 @@ public abstract class SyncableNodeWrapper extends NodeWrapper implements Syncabl
         if (!active()) {
             return;
         }
+
+        clearEventCache();
+
+        if (!active()) {
+            return;
+        }
+
         if (currentData != null) {
             processData(currentData);
             currentData = null;
+        }
+
+        if (!active()) {
+            return;
         }
 
         Synchronizer synchronizer = conductor.synchronizer();

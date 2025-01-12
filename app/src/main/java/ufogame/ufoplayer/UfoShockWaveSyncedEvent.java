@@ -2,13 +2,10 @@ package ufogame.ufoplayer;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import gameframe.conductors.Conductor;
 import gameframe.conductors.Yell;
-import gameframe.functionalities.movement.VelocityBounceMovement;
 import gameframe.functionalities.movement.VelocityMovement;
-import gameframe.functionalities.syncing.DisposeSyncedEvent;
 import gameframe.nodes.Node;
 import gameframe.nodes.NodeWrapper;
 import gameframe.nodes.SyncableNodeWrapper;
@@ -48,7 +45,7 @@ public class UfoShockWaveSyncedEvent implements SyncedEvent {
                     if (nodeWrapper instanceof BallWrapper) {
                         BallWrapper ballWrapper = (BallWrapper) nodeWrapper;
 
-                        conductor.yell(Yell.SWITCHTARGET);
+                        conductor.yell(Yell.SWITCH_TARGET);
                     }
                 } else {
                     velocityMovement.setVelo(newVelo);

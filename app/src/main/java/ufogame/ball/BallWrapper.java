@@ -123,9 +123,13 @@ public class BallWrapper extends SyncableNodeWrapper implements CollisionObserve
 
     @Override
     public void onYell(Yell yell) {
-        if (yell == Yell.SWITCHTARGET) {
+        if (yell == Yell.SWITCH_TARGET) {
             PlayerManager playerManager = conductor.playerManager();
-            setTarget(playerManager.nextPlayer(currentPlayer.getPlayerId()));
+            SyncableNodeWrapper nextPlayer = playerManager.nextPlayer(currentPlayer.getPlayerId());
+            if (nextPlayer != null)
+                setTarget(nextPlayer);
+            else
+                target = null;
         }
     }
 

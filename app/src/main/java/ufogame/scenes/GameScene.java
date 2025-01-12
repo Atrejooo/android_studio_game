@@ -12,6 +12,7 @@ import gameframe.functionalities.syncing.DisposeSyncedEvent;
 import gameframe.utils.Color;
 import synchronizer.ActionPackage;
 import ufogame.ball.BallWrapper;
+import ufogame.gamemanager.GameManager;
 import ufogame.ufoplayer.UfoActionPackage;
 import ufogame.ufoplayer.UfoJoyStickActionListener;
 import ufogame.ufoplayer.UfoPlayerFactory;
@@ -40,8 +41,7 @@ public class GameScene extends Scene {
         addCodeText();
         addShockWaveBtn();
         if (conductor.synchronizer().isEnforcing()) {
-            BallWrapper ballWrapper = new BallWrapper(conductor);
-            ballWrapper.setTarget(conductor.playerManager().getPlayerInstance(conductor.getMyPlayerId()));
+            new GameManager(conductor);
         }
 
         joystick = Joystick.create(1f, new Vec2(0.15f, 0.7f), 0.3f, conductor);
@@ -124,7 +124,8 @@ public class GameScene extends Scene {
                 UfoPlayerWrapper.class,
                 DisposeSyncedEvent.class,
                 BallWrapper.class,
-                UfoShockWaveSyncedEvent.class
+                UfoShockWaveSyncedEvent.class,
+                GameManager.class
         };
     }
 }

@@ -161,7 +161,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         created = true;
 
         // Set the clear color to black
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black (R=0, G=0, B=0, A=1)
+        GLES20.glClearColor(0.06f, 0.0f, 0.12f, 1.0f); // Black (R=0, G=0, B=0, A=1)
 
         // Enable blending for transparency
         GLES20.glEnable(GLES20.GL_BLEND);

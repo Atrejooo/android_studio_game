@@ -60,6 +60,14 @@ public abstract class NodeWrapper extends Conductible implements Disposable, Upd
         removeConductor();
     }
 
+    public void disposeNodes(){
+        while (nodes.size() > 0) {
+            Node node = nodes.removeFirst();
+            node.dispose();
+            node.nodeWrapper = null;
+        }
+    }
+
     public boolean active() {
         return conductor != null;
     }

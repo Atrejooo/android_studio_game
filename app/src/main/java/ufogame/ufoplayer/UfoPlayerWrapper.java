@@ -16,6 +16,7 @@ import gameframe.functionalities.hitbox.HitBoxObserver;
 import gameframe.functionalities.movement.VelocityBounceMovement;
 import gameframe.functionalities.movement.VelocityMovement;
 import gameframe.functionalities.rendering.ImgRenderer;
+import gameframe.functionalities.rendering.LayerGroup;
 import gameframe.functionalities.syncing.SyncedEventExecutor;
 import gameframe.nodes.Node;
 import gameframe.nodes.NodeWrapper;
@@ -95,7 +96,21 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
 
         animator = mainPlayerNode.add(Animator.class);
         animator.setAnimation(new ImgAnimation(0.075f, "PlayerShip", 0, 4));
+
+
+        triangle = scene.add(new Vec2(), "player triangle");
+        addNode(triangle);
+        triangleRendererData = triangle.add(ImgRenderer.class).data();
+        triangleRendererData.setImg("triangle", 0);
+        triangleRendererData.setPxPerUnit(200);
+        triangleRendererData.layerGroup = LayerGroup.UI;
+        triangleRendererData.layer = -1;
+        triangle.transform().setScale(new Vec2(0.75f));
     }
+
+    private Color triangleColor;
+    private ImgRendererData triangleRendererData;
+    private Node triangle;
 
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
@@ -116,6 +131,8 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
         data.inputDir = currentInputDir;
 
         data.playerId = playerId;
+
+        data.triangleColor = triangleColor;
 
         return data;
     }
@@ -139,6 +156,8 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
         }
         mainPlayerNode.transform().setPos(ufoData.pos);
 
+        triangleColor = ufoData.triangleColor;
+
         currentInputDir = ufoData.inputDir;
     }
 
@@ -154,7 +173,7 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
 
     //because currentInput dir gets clamped
     private Vec2 lastInputDir = new Vec2(99);
-    private Delay shockWaveDelay = new Delay(0.4f);
+    private Delay shockWaveDelay = new Delay(0.65f);
     private float shockWaveRadius = 6;
 
     @Override
@@ -166,6 +185,10 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
             return;
         }
         //Log.d(playerId + "", myActionPackage + " id: "+ myActionPackage.hashCode());
+        if (triangleColor == null) {
+            triangleColor = conductor.playerManager().getPlayerColor(playerId);
+        }
+
 
         UfoActionPackage ufoActionPackage = (UfoActionPackage) myActionPackage;
         shockWaveDelay.reduce(conductor.delta());
@@ -218,7 +241,9 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
         }
     }
 
-    private float speed = 20;
+    private final float bounds = 40;
+    
+    private float speed = 30;
     private float maxRot = 0.5f;
     private float rotSpeed = 2f;
 
@@ -261,10 +286,23 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
                 - unlikely
                 - would also not work on host
         */
+        Vec2 currentPos = mainPlayerNode.transform().pos();
+        float diff = (currentPos.mag() - bounds);
+        if (diff > 0) {
+            velocityMovement.addForce(currentPos.normal().mult(-1 * diff));
+        }
         velocityMovement.addForce(currentInputDir.mult(speed * conductor.delta()));
+
 
         if (conductor == null)
             return;
+
+        if (triangleColor != null) {
+            triangleRendererData.setColor(triangleColor);
+        }
+
+        Vec2 triOffset = new Vec2(0, (float) Math.sin(conductor.time() * 7) * 0.16f + 1.3f);
+        triangle.transform().setPos(mainPlayerNode.transform().pos().add(triOffset));
 
         if (playerId == conductor.getMyPlayerId()) {
             conductor.camera().followObj = mainPlayerNode;
@@ -273,14 +311,18 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
 
     @Override
     public void onHit() {
-        conductor.yell(Yell.SWITCHTARGET);
-        enforceDispose();
+        if (conductor != null && conductor.synchronizer().isEnforcing()) {
+            Conductor rememberConductor = conductor;
+            enforceDispose();
+            rememberConductor.yell(Yell.SWITCH_TARGET);
+            rememberConductor.yell(Yell.DIED);
+        }
     }
 
     @Override
     public void enforceDispose() {
         if (conductor != null)
-            conductor.playerManager().putPlayerInstance(playerId, null);
+            conductor.playerManager().removePlayerInstance(playerId);
 
         super.enforceDispose();
     }

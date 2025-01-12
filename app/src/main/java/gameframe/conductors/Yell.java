@@ -1,5 +1,6 @@
 package gameframe.conductors;
 
 public enum Yell {
-    SWITCHTARGET
+    SWITCH_TARGET,
+    DIED
 }

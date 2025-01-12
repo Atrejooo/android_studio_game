@@ -61,8 +61,6 @@ public class VelocityBounceMovement extends VelocityMovement {
             return;
         }
         Node other = overlap.collisions().get(0);
-        if (collisionObserver != null)
-            collisionObserver.onCollisionEnter(other);
 
         for (int i = 0; i < 4 && overlap.collisions().size() > 0; i++) {
             transform().setPos(transform().pos()
@@ -77,6 +75,9 @@ public class VelocityBounceMovement extends VelocityMovement {
 
             velo = velo.flip(tan).mult(-bounceF);
         }
+
+        if (collisionObserver != null)
+            collisionObserver.onCollisionEnter(other);
     }
 
     private OverlapCircle getOverlapCircle() {

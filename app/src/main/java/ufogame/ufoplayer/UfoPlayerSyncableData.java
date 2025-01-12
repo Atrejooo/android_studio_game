@@ -2,6 +2,7 @@ package ufogame.ufoplayer;
 
 import java.io.Serializable;
 
+import gameframe.utils.Color;
 import gameframe.utils.Vec2;
 import synchronizer.SyncableData;
 
@@ -10,6 +11,8 @@ public class UfoPlayerSyncableData implements SyncableData, Serializable {
     Vec2 vel;
 
     Vec2 inputDir = new Vec2();
+
+    Color triangleColor;
 
     int playerId;
     private int instanceId;

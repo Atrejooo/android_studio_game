@@ -1,5 +1,6 @@
 package gameframe.conductors;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import singeltons.PerformanceTester;
 import android.util.Log;
 
 public class CollisionManager extends Conductible implements DoneUpdateable {
-    private LinkedList<Collider> colliders = new LinkedList<>();
+    private ArrayList<Collider> colliders = new ArrayList<>();
 
     public void add(Collider collider) {
         if (collider == null)
@@ -38,7 +39,8 @@ public class CollisionManager extends Conductible implements DoneUpdateable {
     public void doneUpdating() {
         LinkedList<ColliderRect> colliderRects = new LinkedList<>();
 
-        for (Collider collider : colliders) {
+        for (int i = 0; i < colliders.size(); i++) {
+            Collider collider = colliders.get(i);
             if (collider.active()) {
                 colliderRects.add(collider.rect());
             }
@@ -115,7 +117,7 @@ public class CollisionManager extends Conductible implements DoneUpdateable {
     }
 
     public void overlapShape(ICollider shape) {
-        if(tree == null)
+        if (tree == null)
             return;
 
         ColliderRect shapeRect = shape.rect();
