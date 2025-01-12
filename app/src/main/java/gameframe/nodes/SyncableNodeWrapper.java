@@ -108,7 +108,7 @@ public abstract class SyncableNodeWrapper extends NodeWrapper implements Syncabl
         }
     }
 
-    private void replicateOwnEvent(SyncedEventData data) {
+    protected void replicateOwnEvent(SyncedEventData data) {
 
     }
 

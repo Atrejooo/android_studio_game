@@ -54,6 +54,9 @@ public class Conductor extends Time implements SyncContext, DoneUpdateable {
     private Connector connector = ConnectorFactory.createConnector();
     private PlayerManager playerManager;
 
+    //Yelling
+    private List<YellListener> yellListeners = new ArrayList<>();
+
     //view elements
     private ArrayList<Renderer> renderers = new ArrayList<Renderer>();
     private Camera cam;
@@ -75,6 +78,21 @@ public class Conductor extends Time implements SyncContext, DoneUpdateable {
         updateManager.setDoneUpdateables(new DoneUpdateable[]{collisionManager, game, this});
 
         this.scenes = scenes;
+    }
+
+    public void yell(Yell massage) {
+        for (int i = 0; i < yellListeners.size(); i++) {
+            yellListeners.get(i).onYell(massage);
+        }
+    }
+
+    public void addYellListener(YellListener yellListener) {
+        if (!yellListeners.contains(yellListener))
+            yellListeners.add(yellListener);
+    }
+
+    public void removeYellListender(YellListener yellListener) {
+        yellListeners.remove(yellListener);
     }
 
     //control--------------------------------------
@@ -372,10 +390,6 @@ public class Conductor extends Time implements SyncContext, DoneUpdateable {
     @Override
     public void giveActionPackage(ActionPackage clientActionPackage) {
         playerManager.putActionPackage(clientActionPackage);
-        if (clientActionPackage instanceof UfoActionPackage) {
-            UfoActionPackage ufoActionPackage = (UfoActionPackage) clientActionPackage;
-            //Log.d("Conductor", "input from client: " + ufoActionPackage.inputDir);
-        }
     }
 
     public void setActionPackage(ActionPackage actionPackage) throws IllegalArgumentException {
@@ -388,6 +402,7 @@ public class Conductor extends Time implements SyncContext, DoneUpdateable {
                 giveActionPackage(actionPackage);
             } else {
                 synchronizer.sendActionPackage(actionPackage);
+                actionPackage.resetOnSend();
             }
         }
     }

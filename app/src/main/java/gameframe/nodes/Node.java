@@ -21,6 +21,11 @@ public class Node extends Conductible implements Disposable {
         return transform;
     }
 
+    public NodeWrapper getNodeWrapper() {
+        return nodeWrapper;
+    }
+
+    NodeWrapper nodeWrapper;
 
     private ArrayList<Comp> components = new ArrayList<Comp>();
 

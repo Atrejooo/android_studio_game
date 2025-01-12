@@ -30,6 +30,13 @@ public class ActionPackage implements Serializable {
         this.playerId = playerId;
     }
 
+    /**
+     * resets triggers and stuff on send
+     */
+    public void resetOnSend(){
+
+    }
+
     @Override
     public String toString() {
         return "ActionPackage: " + playerId;

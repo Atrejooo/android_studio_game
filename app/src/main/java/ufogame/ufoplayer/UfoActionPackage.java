@@ -12,9 +12,14 @@ public class UfoActionPackage extends ActionPackage implements Serializable {
         super(playerId);
     }
 
-    public Vec2 inputDir = new Vec2();
+    Vec2 inputDir = new Vec2();
 
     Trigger performShockwave = new Trigger(false);
+
+
+    public Trigger getPerformShockwave() {
+        return performShockwave;
+    }
 
     /**
      * Did the input values change or are they different.
@@ -30,6 +35,10 @@ public class UfoActionPackage extends ActionPackage implements Serializable {
     }
 
     @Override
+    public void resetOnSend() {
+        performShockwave.use();
+    }
+
     public boolean equals(Object object) {
         if (this == object) return true;
         if (!(object instanceof UfoActionPackage)) return false;

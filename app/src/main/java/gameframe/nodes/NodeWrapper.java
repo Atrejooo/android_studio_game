@@ -26,8 +26,10 @@ public abstract class NodeWrapper extends Conductible implements Disposable, Upd
      */
     public void addNode(Node node) throws NullPointerException {
         Objects.requireNonNull(node, "node cannot be null");
-        if (!nodes.contains(node))
+        if (!nodes.contains(node)) {
             nodes.add(node);
+            node.nodeWrapper = this;
+        }
     }
 
     @Override
@@ -51,13 +53,25 @@ public abstract class NodeWrapper extends Conductible implements Disposable, Upd
     @Override
     public void dispose() {
         while (nodes.size() > 0) {
-            nodes.removeFirst().dispose();
+            Node node = nodes.removeFirst();
+            node.dispose();
+            node.nodeWrapper = null;
         }
         removeConductor();
     }
 
-    public boolean active(){
+    public boolean active() {
         return conductor != null;
+    }
+
+    public <CompType extends Comp> CompType getInNodes(Class<CompType> compClass) {
+        for (Node node : nodes) {
+            CompType comp = node.get(compClass);
+
+            if (comp != null)
+                return comp;
+        }
+        return null;
     }
 
     @Override

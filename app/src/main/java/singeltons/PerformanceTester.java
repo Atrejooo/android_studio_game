@@ -14,7 +14,7 @@ public class PerformanceTester {
     private static LinkedList<Float> avgWaitingTime = new LinkedList<Float>();
     private static LinkedList<Float> colliderCounts = new LinkedList<>();
     private static LinkedList<Float> colliderPaiCounts = new LinkedList<>();
-    public static boolean active = true;
+    public static boolean active = false;
 
     public static void passTimeData(int time, int waitingTime, int maxWaitingTime) {
         if (!active) return;

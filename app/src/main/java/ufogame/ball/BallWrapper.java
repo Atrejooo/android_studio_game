@@ -1,10 +1,11 @@
 package ufogame.ball;
 
-import android.print.PageRange;
 import android.util.Log;
 
 import common.data.ImgRendererData;
 import gameframe.conductors.Conductor;
+import gameframe.conductors.PlayerManager;
+import gameframe.conductors.Yell;
 import gameframe.functionalities.animation.Animator;
 import gameframe.functionalities.animation.ImgAnimation;
 import gameframe.functionalities.collision.Collider;
@@ -48,7 +49,7 @@ public class BallWrapper extends SyncableNodeWrapper implements CollisionObserve
         collider = mainNode.add(Collider.class);
         collider.setCircle(1);
         collider.setTheyAre(0b0000000000000011);
-        collider.setThisIs(0b0000000000000000);
+        collider.setThisIs(0b0000000000000100);
 
         velocityMovement = mainNode.add(VelocityBounceMovement.class);
         velocityMovement.setaLinDrag(0.1f);
@@ -79,7 +80,7 @@ public class BallWrapper extends SyncableNodeWrapper implements CollisionObserve
         data.vel = velocityMovement.velo();
         data.maxSpeed = maxSpeed;
         data.speedF = speedF;
-        data.targetInstanceId = targetInstanceId;
+        data.playerTargetInstanceId = playerTargetInstanceId;
 
         data.setInstanceId(this.instanceId());
         data.setTypeId(this.typeId());
@@ -101,7 +102,7 @@ public class BallWrapper extends SyncableNodeWrapper implements CollisionObserve
         mainNode.transform().setPos(ballData.pos);
         maxSpeed = ballData.maxSpeed;
         speedF = ballData.speedF;
-        setTarget(ballData.targetInstanceId);
+        setTarget(ballData.playerTargetInstanceId);
     }
 
     @Override
@@ -111,21 +112,38 @@ public class BallWrapper extends SyncableNodeWrapper implements CollisionObserve
         return remember;
     }
 
-    private float maxSpeed = 30;
-    private float speedF = 40;
+    private float maxSpeed = 8;
+    private float speedF = 15;
 
     private Vec2 accelDir = new Vec2();
 
-    private int targetInstanceId;
+    private int playerTargetInstanceId;
     private Node target;
+    private UfoPlayerWrapper currentPlayer;
 
-    public void setTarget(int targetInstanceId) {
-        Idable instance = conductor.getIdDealer().fromInstanceId(targetInstanceId);
+    @Override
+    public void onYell(Yell yell) {
+        if (yell == Yell.SWITCHTARGET) {
+            PlayerManager playerManager = conductor.playerManager();
+            setTarget(playerManager.nextPlayer(currentPlayer.getPlayerId()));
+        }
+    }
+
+    public void setTarget(SyncableNodeWrapper player) {
+        currentPlayer = ((UfoPlayerWrapper) player);
+        setTarget(currentPlayer.instanceId());
+    }
+
+    public void setTarget(int playerId) {
+        Idable instance = conductor.getIdDealer().fromInstanceId(playerId);
 
         if (instance != null) {
-            this.targetInstanceId = targetInstanceId;
+            this.playerTargetInstanceId = playerId;
             this.target = ((UfoPlayerWrapper) instance).playerNode();
             performSync = true;
+
+            maxSpeed += 1;
+            speedF += 2;
         } else {
             Log.e(debugName, "Instance of target not found!");
         }

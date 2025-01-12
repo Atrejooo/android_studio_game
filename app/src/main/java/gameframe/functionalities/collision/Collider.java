@@ -157,9 +157,12 @@ public class Collider extends Comp implements ICollider {
 
     @Override
     public void update() {
+        if (!display)
+            return;
+
         ImgRenderer imgRenderer = node().get(ImgRenderer.class);
 
-        if (imgRenderer == null || !display)
+        if (imgRenderer == null)
             return;
 
         if (collisions.size() > 0) {

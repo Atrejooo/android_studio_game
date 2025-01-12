@@ -4,6 +4,8 @@ import gameframe.nodes.Comp;
 import gameframe.nodes.Node;
 import gameframe.utils.Color;
 import gameframe.utils.Delay;
+import gameframe.utils.Range;
+import singeltons.Randoms;
 
 public class FadeAndDie extends Comp {
     public FadeAndDie(Node node) {
@@ -16,14 +18,17 @@ public class FadeAndDie extends Comp {
     private Renderer renderer;
     private Color color;
     private float time;
+    private Range alpha;
 
-    public void start(Color color, float time, float startDelay) {
+    public void start(Color color, float time, float startDelay, Range alpha) {
         if (!active() || color == null)
             return;
         renderer = node().get(Renderer.class);
-        if (renderer == null)
+        if (renderer == null) {
             return;
+        }
 
+        this.alpha = alpha;
         this.color = color;
         this.startDelay = new Delay(startDelay);
         fadeTime = new Delay(time);
@@ -37,11 +42,11 @@ public class FadeAndDie extends Comp {
 
         float delta = conductor.delta();
         if (!startDelay.ready(delta)) {
-            color.setA(1);
+            color.setA(alpha.min);
             renderer.data().setColor(color);
         } else {
             float t = fadeTime.progress(delta);
-            color.setA(1 - t);
+            color.setA(alpha.lerp(t));
             renderer.data().setColor(color);
 
             if (t >= 1)

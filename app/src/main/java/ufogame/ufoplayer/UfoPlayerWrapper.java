@@ -2,11 +2,15 @@ package ufogame.ufoplayer;
 
 import android.util.Log;
 
+import java.util.List;
+
 import common.data.ImgRendererData;
 import gameframe.conductors.Conductor;
+import gameframe.conductors.Yell;
 import gameframe.functionalities.animation.Animator;
 import gameframe.functionalities.animation.ImgAnimation;
 import gameframe.functionalities.collision.Collider;
+import gameframe.functionalities.collision.OverlapCircle;
 import gameframe.functionalities.hitbox.HitBox;
 import gameframe.functionalities.hitbox.HitBoxObserver;
 import gameframe.functionalities.movement.VelocityBounceMovement;
@@ -14,17 +18,27 @@ import gameframe.functionalities.movement.VelocityMovement;
 import gameframe.functionalities.rendering.ImgRenderer;
 import gameframe.functionalities.syncing.SyncedEventExecutor;
 import gameframe.nodes.Node;
+import gameframe.nodes.NodeWrapper;
 import gameframe.nodes.SyncableNodeWrapper;
 import gameframe.scenes.Scene;
 import gameframe.utils.AddF;
 import gameframe.utils.Color;
+import gameframe.utils.Delay;
 import gameframe.utils.Vec2;
+import iddealer.Idable;
 import singeltons.Randoms;
 import synchronizer.ActionPackage;
 import synchronizer.SyncableData;
+import synchronizer.SyncedEvent;
+import synchronizer.SyncedEventData;
+import ufogame.prefabs.Shockwave;
 
 public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEventExecutor, HitBoxObserver {
     private static final String debugName = "UfoPlayerWrapper";
+
+    public int getPlayerId() {
+        return playerId;
+    }
 
     private int playerId;
     private Vec2 currentInputDir = new Vec2();
@@ -140,6 +154,8 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
 
     //because currentInput dir gets clamped
     private Vec2 lastInputDir = new Vec2(99);
+    private Delay shockWaveDelay = new Delay(0.4f);
+    private float shockWaveRadius = 6;
 
     @Override
     protected void enforcerUpdate() {
@@ -152,6 +168,18 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
         //Log.d(playerId + "", myActionPackage + " id: "+ myActionPackage.hashCode());
 
         UfoActionPackage ufoActionPackage = (UfoActionPackage) myActionPackage;
+        shockWaveDelay.reduce(conductor.delta());
+        //Log.d(debugName, "is ready to us shockWave: " + ufoActionPackage.performShockwave.ready() + ", " + shockWaveDelay.ready());
+        if (ufoActionPackage.performShockwave.use() && shockWaveDelay.ready()) {
+            shockWaveDelay.reset();
+            makeShockwaveEffect();
+
+            Log.d(debugName, "perform shockwave");
+            OverlapCircle overlapCircle = new OverlapCircle(shockWaveRadius,
+                    mainPlayerNode.transform().pos(), 0b00110, conductor);
+
+            enforceShockwave(overlapCircle.collisions());
+        }
 
         if (!lastInputDir.equals(ufoActionPackage.inputDir)) {
             lastInputDir = ufoActionPackage.inputDir;
@@ -160,7 +188,39 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
         }
     }
 
+    private void enforceShockwave(List<Node> nodes) {
+        SyncedEvent event = new UfoShockWaveSyncedEvent(conductor, instanceId(), playerId, velocityMovement, nodes);
+        Log.d(debugName, "enforce shockwave");
+        conductor.synchronizer().enforceEvent(event.getData());
+    }
+
+    private void makeShockwaveEffect() {
+        Shockwave.createShockwave(conductor, mainPlayerNode.transform().pos(), shockWaveRadius, 0.2f);
+        Shockwave.createShockwave(conductor, mainPlayerNode.transform().pos(), shockWaveRadius * 0.666f, 0.2f);
+        Shockwave.createShockwave(conductor, mainPlayerNode.transform().pos(), shockWaveRadius * 0.333f, 0.2f);
+    }
+
+    @Override
+    protected void replicateOwnEvent(SyncedEventData data) {
+        if (data instanceof UfoShockWaveSyncedData) {
+            Log.d(debugName, "replicate shockwave");
+            makeShockwaveEffect();
+            UfoShockWaveSyncedData shockwaveData = (UfoShockWaveSyncedData) data;
+            for (int i = 0; i < shockwaveData.newVelos.length; i++) {
+                Idable idable = conductor.getIdDealer().fromInstanceId(shockwaveData.objectIds[i]);
+                if (idable instanceof NodeWrapper) {
+                    VelocityMovement otherVeloMovement = ((NodeWrapper) idable)
+                            .getInNodes(VelocityMovement.class);
+
+                    otherVeloMovement.setVelo(shockwaveData.newVelos[i]);
+                }
+            }
+        }
+    }
+
     private float speed = 20;
+    private float maxRot = 0.5f;
+    private float rotSpeed = 2f;
 
     @Override
     protected void commonUpdate() {
@@ -168,6 +228,12 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
             Log.e(debugName, "currentInputDir is null!");
             return;
         }
+        float targetRot = -maxRot * currentInputDir.x;
+        float currentRot = mainPlayerNode.transform().roation;
+        if (currentRot < targetRot)
+            mainPlayerNode.transform().roation = Math.min(currentRot + rotSpeed * conductor.delta(), targetRot);
+        else if (currentRot > targetRot)
+            mainPlayerNode.transform().roation = Math.max(currentRot - rotSpeed * conductor.delta(), targetRot);
 
         //TODO check if active works
         //does not seem to happen on clientPlayer
@@ -207,6 +273,15 @@ public class UfoPlayerWrapper extends SyncableNodeWrapper implements SyncedEvent
 
     @Override
     public void onHit() {
-        //enforceDispose();
+        conductor.yell(Yell.SWITCHTARGET);
+        enforceDispose();
+    }
+
+    @Override
+    public void enforceDispose() {
+        if (conductor != null)
+            conductor.playerManager().putPlayerInstance(playerId, null);
+
+        super.enforceDispose();
     }
 }

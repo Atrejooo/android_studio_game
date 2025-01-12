@@ -1,6 +1,10 @@
 package gameframe.utils;
 
-public class Color {
+import java.io.Serializable;
+
+import singeltons.Randoms;
+
+public class Color implements Serializable {
     private float r, g, b, a;
 
     // Constructor with all parameters (with clamping)
@@ -59,40 +63,23 @@ public class Color {
         this.a = AddF.clamp(a, 0, 1);
     }
 
-    public Color(float t, float a) {
-        // Normalize t to a range of 0 to 1 (wrap around if t is outside the range)
-        t = t - (float) Math.floor(t); // Ensures 0 <= t < 1
+    // Generates a random max saturation color
+    public static Color randomMaxSaturationColor() {
+        // Randomly pick one channel to be 1, one channel to be 0, and the last to be in range (0, 1)
+        int randomChannel = (int)(Randoms.range01() * 6); // Generates a value in range [0, 5]
+        float midValue = Randoms.range01(); // Generates a value in range [0, 1]
 
-        // Determine the segment (0.0–1.0 is split into 3 segments)
-        float segment = t * 3; // Scale to range 0–3
-        int iSegment = (int) segment; // Segment index (0 to 2)
-        float localT = segment - iSegment; // Local t within the segment (0 to 1)
+        float r = 0, g = 0, b = 0;
 
-        // Set RGB based on the segment
-        switch (iSegment) {
-            case 0: // Red to Green (R:1, G:0 → G:1, R:0)
-                this.r = 1.0f - localT;
-                this.g = localT;
-                this.b = 0.0f;
-                break;
-            case 1: // Green to Blue (G:1, B:0 → B:1, G:0)
-                this.r = 0.0f;
-                this.g = 1.0f - localT;
-                this.b = localT;
-                break;
-            case 2: // Blue to Red (B:1, R:0 → R:1, B:0)
-                this.r = localT;
-                this.g = 0.0f;
-                this.b = 1.0f - localT;
-                break;
-            default:
-                // Should never reach here
-                this.r = 1.0f;
-                this.g = 0.0f;
-                this.b = 0.0f;
+        switch (randomChannel) {
+            case 0: r = 1; g = 0; b = midValue; break; // Red max, green min
+            case 1: r = 1; g = midValue; b = 0; break; // Red max, blue min
+            case 2: r = 0; g = 1; b = midValue; break; // Green max, red min
+            case 3: r = midValue; g = 1; b = 0; break; // Green max, blue min
+            case 4: r = 0; g = midValue; b = 1; break; // Blue max, red min
+            case 5: r = midValue; g = 0; b = 1; break; // Blue max, green min
         }
 
-        // Default alpha to 1.0 (fully opaque)
-        this.a = a;
+        return new Color(r, g, b, 1.0f); // Full opacity by default
     }
 }

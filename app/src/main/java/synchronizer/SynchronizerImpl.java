@@ -86,7 +86,7 @@ class SynchronizerImpl implements Synchronizer, ConnectorObserver {
             channel.send(data);
 
             if (printSendLog)
-                Log.i(debugName, "host send data: " + data.toString());
+                Log.i(debugName, "host send event: " + data.toString());
         }
 
         List<Syncable> syncables = syncContext.getSyncables();

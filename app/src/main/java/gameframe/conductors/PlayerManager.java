@@ -1,6 +1,8 @@
 package gameframe.conductors;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -8,12 +10,15 @@ import java.util.Set;
 
 import gameframe.functionalities.syncing.PlayerFactory;
 import gameframe.nodes.SyncableNodeWrapper;
+import gameframe.utils.Color;
 import synchronizer.ActionPackage;
 
 public class PlayerManager extends Conductible {
     private Map<Integer, ActionPackage> players = new HashMap<>();
 
     private Map<Integer, SyncableNodeWrapper> playerInstances = new HashMap<>();
+
+    private Map<Integer, Color> playerColors = new HashMap<>();
 
     private PlayerFactory playerFactory;
 
@@ -30,6 +35,7 @@ public class PlayerManager extends Conductible {
     public void removePlayer(int playerId) {
         players.remove(playerId);
         SyncableNodeWrapper instance = playerInstances.remove(playerId);
+        playerColors.remove(playerId);
         if (instance != null) {
             instance.enforceDispose();
         }
@@ -38,10 +44,42 @@ public class PlayerManager extends Conductible {
     public void addPlayer(int playerId) {
         players.put(playerId, null);
         playerInstances.put(playerId, playerFactory.createPlayerInstance(conductor, playerId));
+        playerColors.put(playerId, Color.randomMaxSaturationColor());
+    }
+
+    public void putPlayerInstance(int playerId, SyncableNodeWrapper playerInstance) {
+        playerInstances.put(playerId, playerInstance);
     }
 
     public SyncableNodeWrapper getPlayerInstance(int playerId) {
         return playerInstances.get(playerId);
+    }
+
+    public List<SyncableNodeWrapper> getPlayerInstances() {
+        List<SyncableNodeWrapper> players = new LinkedList<>();
+        for (Integer id : playerInstances.keySet()) {
+            SyncableNodeWrapper instance = playerInstances.get(id);
+            if (instance != null) {
+                players.add(instance);
+            }
+        }
+
+        return players;
+    }
+
+    public int[] playerIds() {
+        Set<Integer> keySet = players.keySet();
+
+        // Create an int array with the size of the keyset
+        int[] keysArray = new int[keySet.size()];
+
+        // Iterate over the keyset and populate the int array
+        int index = 0;
+        for (Integer key : keySet) {
+            keysArray[index++] = key;
+        }
+
+        return playerIds();
     }
 
     public void reAddPlayers() {
@@ -60,12 +98,32 @@ public class PlayerManager extends Conductible {
         playerInstances = map;
     }
 
+    public SyncableNodeWrapper nextPlayer(int playerInstanceId) {
+        boolean next = false;
+        SyncableNodeWrapper first = null;
+        for (Integer id : playerInstances.keySet()) {
+            SyncableNodeWrapper currentInstance = playerInstances.get(id);
+            if (currentInstance == null) {
+                continue;
+            }
+            if (first == null) {
+                first = currentInstance;
+            }
+            if (!next) {
+                next = playerInstanceId == id;
+            } else {
+                return currentInstance;
+            }
+        }
+        return first;
+    }
 
     public void putActionPackage(ActionPackage actionPackage) {
         int id = actionPackage.playerId();
 
         players.put(id, actionPackage);
     }
+
 
 //    public int registerPlayerInstance(SyncableNodeWrapper instance) {
 //        if (playerInstances.containsValue(instance)) {

@@ -9,6 +9,7 @@ import gameframe.functionalities.rendering.LayerGroup;
 import gameframe.nodes.Node;
 import gameframe.scenes.Scene;
 import gameframe.utils.Color;
+import gameframe.utils.Range;
 import gameframe.utils.Vec2;
 
 public class WarningSign {
@@ -23,7 +24,7 @@ public class WarningSign {
 
         node.add(CameraAnchor.class).setAnchor(new Vec2(0.5f));
 
-        node.add(FadeAndDie.class).start(new Color(1f, 1f, 1f, 1f), 0.4f, 0.7f);
+        node.add(FadeAndDie.class).start(new Color(1f, 1f, 1f, 1f), 0.4f, 0.7f, new Range(1, 0));
 
         Wiggle wiggle = node.add(Wiggle.class);
         wiggle.set(0.4f, 18, 0.7f);

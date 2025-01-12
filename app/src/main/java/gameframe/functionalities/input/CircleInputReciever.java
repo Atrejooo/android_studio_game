@@ -22,6 +22,12 @@ public class CircleInputReciever extends Comp {
     private Vec2 where = new Vec2();
     private boolean pressed;
 
+    private InputObserver inputObserver;
+
+    public void setObserver(InputObserver observer) {
+        this.inputObserver = observer;
+    }
+
     public void setRelativeRadius(float radius) {
         this.radius = radius;
     }
@@ -33,6 +39,9 @@ public class CircleInputReciever extends Comp {
     public float radius() {
         return transform().scale().max() * radius;
     }
+
+
+    private boolean wasPressed = false;
 
     @Override
     public void update() {
@@ -66,6 +75,21 @@ public class CircleInputReciever extends Comp {
                 break;
             }
         }
+
+        if (inputObserver == null)
+            return;
+
+        if (wasPressed != pressed) {
+            if (pressed) {
+                inputObserver.onPressed();
+            } else {
+                inputObserver.onRelease();
+            }
+        } else if (pressed) {
+            inputObserver.onHold();
+        }
+
+        wasPressed = pressed;
         //Log.d("circle input", "is pressed: " + pressed());
     }
 }

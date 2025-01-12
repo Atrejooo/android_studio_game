@@ -14,6 +14,10 @@ public class Trigger implements Serializable {
         usable = true;
     }
 
+    public boolean ready() {
+        return usable;
+    }
+
     public boolean use() {
         boolean remember = usable;
         usable = false;

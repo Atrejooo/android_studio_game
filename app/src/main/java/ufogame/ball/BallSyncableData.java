@@ -11,7 +11,7 @@ public class BallSyncableData implements SyncableData {
     float maxSpeed;
     float speedF;
 
-    int targetInstanceId;
+    int playerTargetInstanceId;
 
     private int updateIndex;
     private int instanceId;
