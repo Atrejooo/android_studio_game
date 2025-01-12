@@ -1,7 +1,8 @@
-package visual.activities;
+package visual.activities.testactivities;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,17 +15,13 @@ import gameframe.*;
 
 import android.util.Log;
 
-import java.io.IOException;
-
-import gameframe.scenes.Scene;
-import gameframe.testUtils.TestScene;
 import singeltons.BitmapLoader;
-import views.openglview.*;
-import views.androidview.GameSurfaceView;
+import views.IView;
+import views.ViewFactory;
 
 
 public abstract class MainActivity extends AppCompatActivity {
-    private GameGLSurfaceView glSurfaceView;
+    private IView glSurfaceView;
     private Game game;
     private Connector connector;
 
@@ -98,9 +95,8 @@ public abstract class MainActivity extends AppCompatActivity {
 
     private void createView() {
         if (game != null) {
-            glSurfaceView = new GameGLSurfaceView(this);
-            setContentView(glSurfaceView);
-            glSurfaceView.setPreserveEGLContextOnPause(true);
+            glSurfaceView = ViewFactory.createView(this);
+            setContentView((GLSurfaceView) glSurfaceView);
             game.setView(glSurfaceView);
         }
     }

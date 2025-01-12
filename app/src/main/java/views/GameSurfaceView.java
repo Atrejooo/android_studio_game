@@ -1,12 +1,12 @@
-package views.androidview;
+package views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.util.Log;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -15,16 +15,15 @@ import java.util.Comparator;
 
 import common.ICamera;
 import common.data.ImgRendererData;
+import common.data.InputPackage;
 import common.data.RendererData;
 import gameframe.functionalities.rendering.Camera;
 import gameframe.functionalities.rendering.Renderer;
 import gameframe.utils.Vec2;
 import singeltons.BitmapLoader;
-import views.IView;
-import common.data.InputPackage;
 
 
-public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, IView {
+class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, IView {
     private Paint paint;
 
     private Camera cam;
@@ -56,8 +55,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // Clean up resources when surface is destroyed, if needed
         BitmapLoader.getInstance(getContext()).clearCache();
     }
-
-
 
 
     @Override
@@ -153,5 +150,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public InputPackage getInputPackage() {
         return new InputPackage(new Vec2[0], null, null);
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onPause() {
+
     }
 }

@@ -1,4 +1,4 @@
-package views.openglview;
+package views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,13 +7,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import java.net.CookieHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
 import common.ICamera;
 import common.data.ImgRendererData;
+import common.data.InputPackage;
 import common.data.RendererData;
 import common.data.TxtRendererData;
 import gameframe.utils.Color;
@@ -22,10 +22,8 @@ import gameframe.utils.Vec2;
 import singeltons.BitmapLoader;
 import singeltons.PerformanceTester;
 import singeltons.TextBitmapLoader;
-import views.IView;
-import common.data.InputPackage;
 
-public class GameGLSurfaceView extends GLSurfaceView implements IView {
+class GameGLSurfaceView extends GLSurfaceView implements IView {
     private GameRenderer gameRenderer;
     private ICamera cam;
     private InputPackage input = new InputPackage(new Vec2[0], null, null);
@@ -36,6 +34,7 @@ public class GameGLSurfaceView extends GLSurfaceView implements IView {
 
         // Set OpenGL ES version
         setEGLContextClientVersion(2);  // Using OpenGL ES 2.0
+        setPreserveEGLContextOnPause(true);
 
         // Set the custom renderer
         gameRenderer = new GameRenderer(getContext());
@@ -43,6 +42,7 @@ public class GameGLSurfaceView extends GLSurfaceView implements IView {
         // Set render mode to continuous rendering (alternatively, use RENDERMODE_WHEN_DIRTY if frame-by-frame updates aren't necessary)
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
+
     @Override
     public void giveData(ICamera cam, RendererData[] renderers) {
 

@@ -2,6 +2,7 @@ package visual.activities;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -9,16 +10,14 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import gameframe.scenes.Scene;
-import gameframe.testUtils.TestScene;
-import ufogame.scenes.UfoSceneSupplier;
 import gameframe.Game;
-
 import singeltons.BitmapLoader;
-import views.openglview.GameGLSurfaceView;
+import ufogame.scenes.UfoSceneSupplier;
+import views.IView;
+import views.ViewFactory;
 
 public class UfoGameMainActivity extends AppCompatActivity {
-    private GameGLSurfaceView glSurfaceView;
+    private IView glSurfaceView;
     private Game game;
 
     @Override
@@ -73,9 +72,8 @@ public class UfoGameMainActivity extends AppCompatActivity {
 
     private void createView() {
         if (game != null) {
-            glSurfaceView = new GameGLSurfaceView(this);
-            setContentView(glSurfaceView);
-            glSurfaceView.setPreserveEGLContextOnPause(true);
+            glSurfaceView = ViewFactory.createView(this);
+            setContentView((GLSurfaceView) glSurfaceView);
             game.setView(glSurfaceView);
         }
     }

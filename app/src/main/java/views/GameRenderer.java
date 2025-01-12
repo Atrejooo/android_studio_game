@@ -1,4 +1,4 @@
-package views.openglview;
+package views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,10 +16,9 @@ import java.util.ArrayList;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import gameframe.utils.Color;
 import gameframe.utils.Vec2;
 
-public class GameRenderer implements GLSurfaceView.Renderer {
+class GameRenderer implements GLSurfaceView.Renderer {
     /**
      * max allowed vertices (* 4)
      */
@@ -135,7 +134,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         //reallocate a new memory for the new data
         vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4) // Allocate new buffer
                 .order(ByteOrder.nativeOrder())  // Use native order
-               .asFloatBuffer();
+                .asFloatBuffer();
         vertexBuffer.put(vertices); // Populate the buffer with the new data
         vertexBuffer.position(0); // Reset position to 0 to prepare for use
 
@@ -197,20 +196,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     /**
      * current aspect of the renderer
+     *
      * @return aspect ratio as float
      */
 //    public float aspectRatio() {
 //        return aspect;
 //    }
-
     public float aspectRatio() {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        aspect =(float) metrics.heightPixels / (float) metrics.widthPixels;
+        aspect = (float) metrics.heightPixels / (float) metrics.widthPixels;
         return aspect;
     }
 
     /**
      * current dimensions of the screen
+     *
      * @return Vec2(width, height)
      */
     public Vec2 screen() {
@@ -257,6 +257,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     /**
      * tells OpenGL to load the shaders and create a pipeline with them
+     *
      * @return the program handle of the created program
      */
     private int createProgram() {
@@ -362,6 +363,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     /**
      * returns the texture handle of the Bitmap that was passed to OpenGl
      * considers if the texture was already loaded
+     *
      * @param bitmap to load
      * @return the according texture handle
      */
@@ -390,6 +392,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     /**
      * loads the bitmap as a texture in OpenGL
+     *
      * @param bitmap to be loaded
      * @return id
      */
@@ -413,7 +416,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         return textureHandle[0];
     }
-
 
 
     private class LoadedTexture {
