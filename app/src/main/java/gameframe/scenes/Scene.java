@@ -12,7 +12,7 @@ import gameframe.nodes.NodeWrapper;
 import gameframe.utils.Vec2;
 
 public class Scene extends Conductible implements IdableTypeLibrary {
-    private ArrayList<Node> nodes = new ArrayList<Node>();
+    protected ArrayList<Node> nodes = new ArrayList<Node>();
     private ArrayList<Disposable> disposables = new ArrayList<>();
 
     /**

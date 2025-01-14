@@ -3,6 +3,10 @@ package gameframe.conductors;
 public class Conductible implements YellListener {
     protected Conductor conductor;
 
+    public Conductor getConductor(){
+        return conductor;
+    }
+
     public void setConductor(Conductor conductor) {
         this.conductor = conductor;
         conductor.addYellListener(this);

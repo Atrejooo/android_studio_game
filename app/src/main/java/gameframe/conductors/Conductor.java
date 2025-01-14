@@ -104,6 +104,7 @@ public class Conductor extends Time implements SyncContext, DoneUpdateable {
         // start the 1st scene
         if (scenes.length > 0) {
             activeScene = scenes[0];
+            idDealer.defineTypes(activeScene.getIdableTypes());
             activeScene.init(this);
         }
 

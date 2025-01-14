@@ -18,7 +18,7 @@ import iddealer.Idable;
 
 class SynchronizerImpl implements Synchronizer, ConnectorObserver {
     private static final String debugName = "Synchronizer";
-    private static final boolean printSendLog = true;
+    private static final boolean printSendLog = false;
 
 
     private IdDealer idDealer;

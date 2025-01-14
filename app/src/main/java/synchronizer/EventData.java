@@ -5,8 +5,6 @@ import java.io.Serializable;
 import iddealer.Idable;
 
 public class EventData implements Serializable, Idable {
-
-
     @Override
     public int instanceId() {
         return 0;
